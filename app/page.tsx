@@ -3,16 +3,28 @@ import Link from "next/link";
 import { PostType } from "./types";
 
 async function fetchAllPosts() {
-  const baseUrl = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : process.env.NEXT_PUBLIC_API_URL;
+  try {
+    const baseUrl = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : process.env.NEXT_PUBLIC_API_URL;
 
-  const res = await fetch(`${baseUrl}/api/blog`, {
-    cache: "no-store",
-  });
+    const res = await fetch(`${baseUrl}/api/blog`, {
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const data = await res.json();
-  return data.posts;
+    if (!res.ok) {
+      throw new Error(`APIエラー: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data.posts || [];
+  } catch (error) {
+    console.error("投稿の取得に失敗しました:", error);
+    return [];
+  }
 }
 
 export default async function Home() {
