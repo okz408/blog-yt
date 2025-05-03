@@ -5,8 +5,12 @@ import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useRef, useEffect } from "react";
 
+const baseUrl = process.env.VERCEL_URL 
+? `https://${process.env.VERCEL_URL}` 
+: process.env.NEXT_PUBLIC_API_URL;
+
 const editBlog = async (title: string, description: string, id: string) => {
-  const res = await fetch(`http://localhost:3000/api/blog/${id}`, {
+  const res = await fetch(`${baseUrl}/api/blog/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +26,7 @@ const editBlog = async (title: string, description: string, id: string) => {
 }
 
 const deleteBlog = async (id: string) => {
-  const res = await fetch(`http://localhost:3000/api/blog/${id}`, {
+  const res = await fetch(`${baseUrl}/api/blog/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -37,7 +41,7 @@ const deleteBlog = async (id: string) => {
 }
 
 const getBlogById = async (id: string) => {
-  const res = await fetch(`http://localhost:3000/api/blog/${id}`);
+  const res = await fetch(`${baseUrl}/api/blog/${id}`);
 
   if (!res.ok) {
     throw new Error("Failed to create post");

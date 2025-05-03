@@ -6,7 +6,11 @@ import { useRef } from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 const postBlog = async (title: string, description: string) => {
-  const res = await fetch("http://localhost:3000/api/blog", {
+  const baseUrl = process.env.VERCEL_URL 
+  ? `https://${process.env.VERCEL_URL}` 
+  : process.env.NEXT_PUBLIC_API_URL;
+
+  const res = await fetch(`${baseUrl}/api/blog`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

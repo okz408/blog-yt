@@ -3,7 +3,11 @@ import Link from "next/link";
 import { PostType } from "./types";
 
 async function fetchAllPosts() {
-  const res = await fetch("http://localhost:3000/api/blog", {
+  const baseUrl = process.env.VERCEL_URL 
+  ? `https://${process.env.VERCEL_URL}` 
+  : process.env.NEXT_PUBLIC_API_URL;
+
+  const res = await fetch(`${baseUrl}/api/blog`, {
     cache: "no-store",
   });
 
