@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useRef, useEffect } from "react";
 
-const editBlog = async (title: string, description: string, id: number) => {
+const editBlog = async (title: string, description: string, id: string) => {
   const res = await fetch(`http://localhost:3000/api/blog/${id}`, {
     method: "PUT",
     headers: {
@@ -21,7 +21,7 @@ const editBlog = async (title: string, description: string, id: number) => {
   return res.json();
 }
 
-const deleteBlog = async (id: number) => {
+const deleteBlog = async (id: string) => {
   const res = await fetch(`http://localhost:3000/api/blog/${id}`, {
     method: "DELETE",
     headers: {
@@ -36,7 +36,7 @@ const deleteBlog = async (id: number) => {
   return res.json();
 }
 
-const getBlogById = async (id: number) => {
+const getBlogById = async (id: string) => {
   const res = await fetch(`http://localhost:3000/api/blog/${id}`);
 
   if (!res.ok) {
@@ -47,16 +47,17 @@ const getBlogById = async (id: number) => {
   return data.posts;
 }
 
-const EditPost = ({params}: {params: {id: number}}) => {
+const EditPost = ({params}: {params: Promise<{ id: string }>}) => {
   const router = useRouter();
   const titleref = useRef<HTMLInputElement | null>(null);
   const descref = useRef<HTMLTextAreaElement | null>(null);
+  const paramsData = use(params);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     toast.loading("Loading...");
-    await editBlog(titleref.current?.value!, descref.current?.value!, params.id);
+    await editBlog(titleref.current?.value!, descref.current?.value!, paramsData.id);
     
     toast.success("編集しました");
     router.push("/");
@@ -67,7 +68,7 @@ const EditPost = ({params}: {params: {id: number}}) => {
     e.preventDefault();
 
     toast.loading("Loading...");
-    await deleteBlog(params.id);
+    await deleteBlog(paramsData.id);
     
     toast.success("削除しました");
     router.push("/");
@@ -75,7 +76,7 @@ const EditPost = ({params}: {params: {id: number}}) => {
   }
 
   useEffect(() => {
-    getBlogById(params.id)
+    getBlogById(paramsData.id)
       .then((data) => {
         titleref.current!.value = data.title;
         descref.current!.value = data.description;
@@ -84,7 +85,7 @@ const EditPost = ({params}: {params: {id: number}}) => {
         toast.error("ブログの取得に失敗しました");
       }
     );
-  }, [params.id]);
+  }, [paramsData.id]);
 
   return (
     <>

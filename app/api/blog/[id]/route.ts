@@ -1,12 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
-import { main } from "@/app/api/blog/route";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma, connectDB } from "@/lib/prismaClient";
 
-const prisma = new PrismaClient();
-
-export const GET = async (req: Request, res: NextResponse) => {
+export const GET = async (req: NextRequest) => {
   try {
-    await main();
+    await connectDB();
     const posts = await prisma.post.findFirst({
       where: {id: parseInt(req.url.split("/blog/")[1])}
     });
@@ -18,11 +15,11 @@ export const GET = async (req: Request, res: NextResponse) => {
   }
 }
 
-export const PUT = async (req: Request, res: NextResponse) => {
+export const PUT = async (req: NextRequest) => {
   try {
     const { title, description } = await req.json();
 
-    await main();
+    await connectDB();
     const posts = await prisma.post.update({
       where: {id: parseInt(req.url.split("/blog/")[1])},
       data: { title, description }
@@ -35,9 +32,9 @@ export const PUT = async (req: Request, res: NextResponse) => {
   }
 }
 
-export const DELETE = async (req: Request, res: NextResponse) => {
+export const DELETE = async (req: NextRequest) => {
   try {
-    await main();
+    await connectDB();
     const posts = await prisma.post.delete({
       where: {id: parseInt(req.url.split("/blog/")[1])}
     });
